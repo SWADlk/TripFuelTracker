@@ -40,57 +40,27 @@
     </form>
   </div>
 
-  <script>
+<script>
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const tripName = document.getElementById("tripName").value;
-    const tripType = document.querySelector('input[name="tripType"]:checked').value;
-    const tripStatus = document.querySelector('input[name="tripStatus"]:checked').value;
-    const fuelQty = document.querySelector('input[name="fuelQty"]:checked').value;
-    const remarks = document.getElementById("remarks").value;
-    const position = await getLocation();
-
-    const data = {
-      tripName,
-      tripType,
-      tripStatus,
-      fuelQty,
-      remarks,
-      location: position
-    };
+    const form = new FormData(event.target);
 
     try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbx6EZEj93f6zDnCoVZORWXz3JaMGOsMGtAUDPpaqmKQZjeN6TRFzY11qLhT39ggG-RpMQ/exec", {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
+        body: form,
       });
 
-      const result = await response.json();
-      alert("Trip saved! Row: " + result.row);
+      const result = await response.text(); // .text() instead of .json() for FormData
+      alert("Trip saved successfully!");
       document.querySelector("form").reset();
     } catch (error) {
       alert("Error submitting form.");
       console.error("Submission error:", error);
     }
   }
+</script>
 
-  function getLocation() {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) {
-        resolve("Location not available");
-      } else {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const coords = pos.coords.latitude + ", " + pos.coords.longitude;
-            resolve(coords);
-          },
-          () => resolve("Permission denied")
-        );
-      }
-    });
-  }
-  </script>
 </body>
 </html>
