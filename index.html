@@ -2,161 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trip & Fuel Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
-    }
-    h1 {
-      color: #333;
-    }
-    .section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin-bottom: 30px;
-    }
-    .label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input[type="text"],
-    textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .report {
-      background: #eef;
-      padding: 15px;
-      border-radius: 10px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #28a745;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #218838;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip Tracker</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Trip & Fuel Tracker</h1>
+  <div class="container">
+    <h2>Trip Tracker</h2>
+    <form onsubmit="handleSubmit(event)">
+      <label for="tripName">Trip Name / ID *</label>
+      <input type="text" id="tripName" name="tripName" required />
 
-  <div class="section">
-    <label class="label">Mileage (km)</label>
-    <input type="text" id="mileage" required />
+      <label>Trip Type *</label>
+      <div class="radio-group">
+        <label><input type="radio" name="tripType" value="Official" required /> Official</label>
+        <label><input type="radio" name="tripType" value="Private" /> Private</label>
+      </div>
 
-    <label class="label">Trip Type</label>
-    <input type="radio" name="tripType" value="Official" checked /> Official
-    <input type="radio" name="tripType" value="Private" /> Private
+      <label>Trip Status *</label>
+      <div class="radio-group">
+        <label><input type="radio" name="tripStatus" value="Start Trip" required /> Start Trip</label>
+        <label><input type="radio" name="tripStatus" value="End Trip" /> End Trip</label>
+      </div>
 
-    <label class="label">Trip Action</label>
-    <input type="radio" name="tripAction" value="Start Trip" checked /> Start Trip
-    <input type="radio" name="tripAction" value="End Trip" /> End Trip
-    <input type="radio" name="tripAction" value="Fuel Fill" /> Fuel Quantity
+      <label>Fuel Quantity *</label>
+      <div class="radio-group">
+        <label><input type="radio" name="fuelQty" value="Full Tank" required /> Full Tank</label>
+        <label><input type="radio" name="fuelQty" value="Half Tank" /> Half Tank</label>
+        <label><input type="radio" name="fuelQty" value="Low" /> Low</label>
+      </div>
 
-    <label class="label">Remarks</label>
-    <textarea id="remarks"></textarea>
+      <label for="remarks">Remarks (Optional)</label>
+      <textarea id="remarks" name="remarks" rows="3"></textarea>
 
-    <button onclick="submitForm()">Submit</button>
-  </div>
-
-  <div class="report" id="report">
-    <strong>Last Fuel Filled:</strong><br />
-    Date: <span id="lastDate">-</span> |
-    Quantity: <span id="lastQty">-</span> |
-    Mileage: <span id="lastMileage">-</span><br />
-    <strong>Cumulative This Month:</strong><br />
-    Official: <span id="officialTotal">0</span> km |
-    Private: <span id="privateTotal">0</span> km
+      <button type="submit">Submit</button>
+    </form>
   </div>
 
   <script>
-    let monthlyOfficial = 0;
-    let monthlyPrivate = 0;
-    let lastFuelDate = '-';
-    let lastFuelQty = '-';
-    let lastFuelMileage = '-';
+  async function handleSubmit(event) {
+  event.preventDefault();
 
-    function submitForm() {
-      const mileage = document.getElementById("mileage").value.trim();
-      const remarks = document.getElementById("remarks").value;
-      const tripType = document.querySelector('input[name="tripType"]:checked').value;
-      const tripAction = document.querySelector('input[name="tripAction"]:checked').value;
-      const datetime = new Date().toLocaleString();
+  const tripName = document.getElementById("tripName").value;
+  const tripType = document.querySelector('input[name="tripType"]:checked').value;
+  const tripStatus = document.querySelector('input[name="tripStatus"]:checked').value;
+  const fuelQty = document.querySelector('input[name="fuelQty"]:checked').value;
+  const remarks = document.getElementById("remarks").value;
 
-      if (!mileage) {
-        alert("Mileage is required!");
-        return;
-      }
+  const position = await getLocation();
 
-      const mileageNum = parseFloat(mileage);
-      if (tripType === "Official") monthlyOfficial += mileageNum;
-      if (tripType === "Private") monthlyPrivate += mileageNum;
+  const data = {
+    tripName,
+    tripType,
+    tripStatus,
+    fuelQty,
+    remarks,
+    location: position
+  };
 
-      if (tripAction === "Fuel Fill") {
-        lastFuelDate = datetime;
-        lastFuelQty = "Filled";
-        lastFuelMileage = mileage;
-      }
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbx6EZEj93f6zDnCoVZORWXz3JaMGOsMGtAUDPpaqmKQZjeN6TRFzY11qLhT39ggG-RpMQ/exec", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    });
 
-      updateReport();
+    const result = await response.json();
+    alert("Trip saved! Row: " + result.row);
+    document.querySelector("form").reset();
+  } catch (error) {
+    alert("Error submitting form.");
+    console.error("Submission error:", error);
+  }
+}
 
-      const data = {
-        mileage: mileage,
-        tripType: tripType,
-        tripAction: tripAction,
-        remarks: remarks,
-        datetime: datetime
-      };
-
-      saveToGoogleSheet(data);
-
-      document.getElementById("mileage").value = "";
-      document.getElementById("remarks").value = "";
-    }
-
-    function updateReport() {
-      document.getElementById("lastDate").innerText = lastFuelDate;
-      document.getElementById("lastQty").innerText = lastFuelQty;
-      document.getElementById("lastMileage").innerText = lastFuelMileage;
-      document.getElementById("officialTotal").innerText = monthlyOfficial;
-      document.getElementById("privateTotal").innerText = monthlyPrivate;
-    }
-
-    function saveToGoogleSheet(data) {
-      fetch("https://script.google.com/macros/s/AKfycbxGXcUxq8B2O-XQyxnKjdMbOTPehtz8K-wzt9PTqQLLuIzkk7N5fmQ6QCXm5gDICLcZ/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+function getLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve("Location not available");
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = pos.coords.latitude + ", " + pos.coords.longitude;
+          resolve(coords);
         },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(res => {
-        console.log("Saved:", res);
-        alert("Data saved successfully!");
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        alert("Failed to save. Check console.");
-      });
+        () => resolve("Permission denied")
+      );
     }
-  </script>
+  });
+}
+
+</script>
 </body>
 </html>
