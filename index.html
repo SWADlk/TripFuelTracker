@@ -1,248 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trip Details</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom font for a modern look */
-        body {
-            font-family: "Inter", sans-serif;
-        }
-        /* Style for radio button labels to act as toggle buttons */
-        .toggle-button {
-            @apply flex-1 py-3 px-4 text-center cursor-pointer rounded-lg transition-colors duration-200 ease-in-out;
-            @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
-        }
-        .toggle-button input[type="radio"]:checked + span {
-            @apply bg-blue-600 text-white shadow-md;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Running Record</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+  body {
+    font-family: "Inter", sans-serif;
+  }
+
+  /* Custom radio selection background and text color */
+  .radio-label input:checked + div {
+    background-color: #16a34a; /* Tailwind green-600 */
+    color: white;
+    box-shadow: 0 0 0 2px #16a34a44;
+  }
+
+  /* Custom highlight when selecting text */
+  ::selection {
+    background-color: #bbf7d0; /* Tailwind green-200 */
+    color: #065f46;           /* Tailwind green-800 */
+  }
+</style>
+
 </head>
-<body class="font-sans bg-gray-100 min-h-screen p-4 flex flex-col sm:flex-row justify-center items-start sm:items-center gap-8">
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Trip Details</h1>
+<body class="bg-gray-100 py-8 px-4">
+  <div class="max-w-xl mx-auto space-y-8">
 
-        <form class="space-y-6" action="https://script.google.com/macros/s/AKfycbyCHY4hb4PTSiRpGpYYJPBRaYQZpUbI46zVOJSRf1pGdjV0yhxn7OrbM1cgUNvzMfzS/exec" method="POST" id="tripForm">
-            <div>
-                <label for="tripIdentifier" class="block text-sm font-medium text-gray-700 mb-1">Trip Identifier <span class="text-red-500">*</span></label>
-                <input
-                    type="text"
-                    id="tripIdentifier"
-                    name="tripIdentifier"
-                    placeholder="e.g., Trip #123, Client Meeting"
-                    class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-base"
-                    required
-                >
-            </div>
+    <!-- Trip Form -->
+    <form id="tripForm" action="https://script.google.com/macros/s/AKfycbyCHY4hb4PTSiRpGpYYJPBRaYQZpUbI46zVOJSRf1pGdjV0yhxn7OrbM1cgUNvzMfzS/exec" method="POST" class="bg-white p-6 rounded-2xl shadow-lg space-y-6">
+      <h1 class="text-2xl font-bold text-center text-gray-800">🚗 Running Record</h1>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Trip Type</label>
-                <div class="flex space-x-3">
-                    <label class="toggle-button">
-                        <input type="radio" name="tripType" value="official" class="hidden" required>
-                        <span class="block">Official</span>
-                    </label>
-                    <label class="toggle-button">
-                        <input type="radio" name="tripType" value="private" class="hidden">
-                        <span class="block">Private</span>
-                    </label>
-                </div>
-            </div>
+      <div>
+        <label for="tripIdentifier" class="text-sm font-medium block mb-1">Reading <span class="text-red-500">*</span></label>
+        <input type="text" name="tripIdentifier" id="tripIdentifier" required placeholder="e.g., Trip #123" class="w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"/>
+      </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Trip Status</label>
-                <div class="flex space-x-3">
-                    <label class="toggle-button">
-                        <input type="radio" name="tripStatus" value="start" class="hidden" required>
-                        <span class="block">Start Trip</span>
-                    </label>
-                    <label class="toggle-button">
-                        <input type="radio" name="tripStatus" value="end" class="hidden">
-                        <span class="block">End Trip</span>
-                    </label>
-                    <label class="toggle-button">
-                        <input type="radio" name="tripStatus" value="fueling" class="hidden">
-                        <span class="block">Fueling</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="fuelQuantityContainer" class="hidden">
-                <label for="fuelQuantityLiters" class="block text-sm font-medium text-gray-700 mb-1">Fuel Quantity (Liters) <span class="text-red-500">*</span></label>
-                <input
-                    type="number"
-                    id="fuelQuantityLiters"
-                    name="fuelQuantityLiters"
-                    placeholder="e.g., 25.5"
-                    min="0"
-                    step="0.1"
-                    class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-base"
-                >
-            </div>
-
-            <div>
-                <label for="remarks" class="block text-sm font-medium text-gray-700 mb-1">Remarks (Optional)</label>
-                <textarea
-                    id="remarks"
-                    name="remarks"
-                    rows="4"
-                    placeholder="Add any additional notes here..."
-                    class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-base resize-y"
-                ></textarea>
-            </div>
-
-            <input type="hidden" id="submissionTimestamp" name="submissionTimestamp">
-
-            <div>
-                <button
-                    type="submit"
-                    name="submitButton"
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                >
-                    Submit Trip Details
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Trip Summary Report</h2>
-        <div class="space-y-4 text-gray-700">
-            <p class="flex justify-between items-center text-lg">
-                <span class="font-medium">Monthly Fuel (Liters):</span>
-                <span id="monthlyFuel" class="text-blue-600 font-semibold text-xl">0.00</span>
-            </p>
-            <p class="flex justify-between items-center text-lg">
-                <span class="font-medium">Total Private Trips:</span>
-                <span id="totalPrivateTrips" class="text-blue-600 font-semibold text-xl">0</span>
-            </p>
-            <p class="flex justify-between items-center text-lg">
-                <span class="font-medium">Total Official Trips:</span>
-                <span id="totalOfficialTrips" class="text-blue-600 font-semibold text-xl">0</span>
-            </p>
+      <div>
+        <label class="text-sm font-medium block mb-2">Trip Type</label>
+        <div class="space-y-2">
+          <label class="radio-label flex items-center">
+            <input type="radio" name="tripType" value="official" class="hidden" required/>
+            <div class="w-full text-center py-3 px-4 rounded-lg bg-gray-200 text-gray-700 cursor-pointer">Official</div>
+          </label>
+          <label class="radio-label flex items-center">
+            <input type="radio" name="tripType" value="private" class="hidden"/>
+            <div class="w-full text-center py-3 px-4 rounded-lg bg-gray-200 text-gray-700 cursor-pointer">Private</div>
+          </label>
         </div>
-        <p class="text-sm text-gray-500 text-center mt-6">Data updated on: <span id="lastUpdated">N/A</span></p>
+      </div>
+
+      <div>
+        <label class="text-sm font-medium block mb-2">Trip Status</label>
+        <div class="space-y-2">
+          <label class="radio-label flex items-center">
+            <input type="radio" name="tripStatus" value="start" class="hidden" required/>
+            <div class="w-full text-center py-3 px-4 rounded-lg bg-gray-200 text-gray-700 cursor-pointer">Start Trip</div>
+          </label>
+          <label class="radio-label flex items-center">
+            <input type="radio" name="tripStatus" value="end" class="hidden"/>
+            <div class="w-full text-center py-3 px-4 rounded-lg bg-gray-200 text-gray-700 cursor-pointer">End Trip</div>
+          </label>
+          <label class="radio-label flex items-center">
+            <input type="radio" name="tripStatus" value="fueling" class="hidden"/>
+            <div class="w-full text-center py-3 px-4 rounded-lg bg-gray-200 text-gray-700 cursor-pointer">Fueling</div>
+          </label>
+        </div>
+      </div>
+
+      <div id="fuelQuantityContainer" class="hidden">
+        <label for="fuelQuantityLiters" class="text-sm font-medium block mb-1">Fuel Quantity (Liters) <span class="text-red-500">*</span></label>
+        <input type="number" name="fuelQuantityLiters" id="fuelQuantityLiters" step="0.1" placeholder="e.g., 25.5" min="0" class="w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"/>
+      </div>
+
+      <div>
+        <label for="remarks" class="text-sm font-medium block mb-1">Remarks (Optional)</label>
+        <textarea name="remarks" id="remarks" rows="3" placeholder="Any notes..." class="w-full px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
+      </div>
+
+      <input type="hidden" name="submissionTimestamp" id="submissionTimestamp" />
+
+      <button type="submit" class="w-full bg-blue-600 text-white text-lg font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition">Submit</button>
+    </form>
+
+    <!-- Trip Summary -->
+    <div class="bg-white p-6 rounded-2xl shadow-lg space-y-4 text-center">
+      <h2 class="text-xl font-bold text-gray-800">📊 Running Summary</h2>
+      <div class="text-gray-700 space-y-2 text-left">
+        <p class="flex justify-between"><span>Monthly Fuel (L):</span> <span id="monthlyFuel" class="text-blue-600 font-bold">0.00</span></p>
+        <p class="flex justify-between"><span>Private Trips:</span> <span id="totalPrivateTrips" class="text-blue-600 font-bold">0</span></p>
+        <p class="flex justify-between"><span>Official Trips:</span> <span id="totalOfficialTrips" class="text-blue-600 font-bold">0</span></p>
+      </div>
+      <p class="text-xs text-gray-500">Last Updated: <span id="lastUpdated">N/A</span></p>
     </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tripStatusRadios = document.querySelectorAll('input[name="tripStatus"]');
-            const fuelQuantityContainer = document.getElementById('fuelQuantityContainer');
-            const fuelQuantityInput = document.getElementById('fuelQuantityLiters');
-            const tripForm = document.getElementById('tripForm');
-            const submissionTimestampInput = document.getElementById('submissionTimestamp');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const tripStatusRadios = document.querySelectorAll('input[name="tripStatus"]');
+      const fuelQuantityContainer = document.getElementById('fuelQuantityContainer');
+      const fuelQuantityInput = document.getElementById('fuelQuantityLiters');
+      const tripForm = document.getElementById('tripForm');
+      const submissionTimestampInput = document.getElementById('submissionTimestamp');
 
-            // Report elements
-            const monthlyFuelElem = document.getElementById('monthlyFuel');
-            const totalPrivateTripsElem = document.getElementById('totalPrivateTrips');
-            const totalOfficialTripsElem = document.getElementById('totalOfficialTrips');
-            const lastUpdatedElem = document.getElementById('lastUpdated');
+      const monthlyFuelElem = document.getElementById('monthlyFuel');
+      const totalPrivateTripsElem = document.getElementById('totalPrivateTrips');
+      const totalOfficialTripsElem = document.getElementById('totalOfficialTrips');
+      const lastUpdatedElem = document.getElementById('lastUpdated');
 
-            // Function to update visibility and required status of fuel input
-            function updateFuelVisibility() {
-                let isFuelingSelected = false;
-                tripStatusRadios.forEach(radio => {
-                    if (radio.checked && radio.value === 'fueling') {
-                        isFuelingSelected = true;
-                    }
-                });
+      function updateFuelVisibility() {
+        let isFuelingSelected = Array.from(tripStatusRadios).some(radio => radio.checked && radio.value === 'fueling');
+        fuelQuantityContainer.classList.toggle('hidden', !isFuelingSelected);
+        isFuelingSelected ? fuelQuantityInput.setAttribute('required', 'true') : fuelQuantityInput.removeAttribute('required');
+        if (!isFuelingSelected) fuelQuantityInput.value = '';
+      }
 
-                if (isFuelingSelected) {
-                    fuelQuantityContainer.classList.remove('hidden');
-                    fuelQuantityInput.setAttribute('required', 'true');
-                } else {
-                    fuelQuantityContainer.classList.add('hidden');
-                    fuelQuantityInput.removeAttribute('required');
-                    fuelQuantityInput.value = ''; // Clear value when hidden
-                }
+      async function fetchAndDisplayReport() {
+        const url = 'https://script.google.com/macros/s/AKfycbyCHY4hb4PTSiRpGpYYJPBRaYQZpUbI46zVOJSRf1pGdjV0yhxn7OrbM1cgUNvzMfzS/exec';
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Network error');
+
+          const data = await response.json();
+          let monthlyFuel = 0, privateCount = 0, officialCount = 0;
+          const now = new Date();
+
+          data.forEach(row => {
+            const type = String(row['Trip Type']).toLowerCase().trim();
+            const timestamp = new Date(row['Timestamp']);
+            const fuel = parseFloat(row['Fuel Quantity (Liters)']);
+
+            if (type === 'private') privateCount++;
+            if (type === 'official') officialCount++;
+            if (!isNaN(timestamp) && timestamp.getMonth() === now.getMonth() && timestamp.getFullYear() === now.getFullYear() && !isNaN(fuel)) {
+              monthlyFuel += fuel;
             }
+          });
 
-            // Function to fetch and display report data
-            async function fetchAndDisplayReport() {
-                // This URL is now correctly set to your provided Apps Script Web App URL
-                const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyCHY4hb4PTSiRpGpYYJPBRaYQZpUbI46zVOJSRf1pGdjV0yhxn7OrbM1cgUNvzMfzS/exec';
-                
-                console.log('Attempting to fetch data from:', appsScriptUrl);
+          monthlyFuelElem.textContent = monthlyFuel.toFixed(2);
+          totalPrivateTripsElem.textContent = privateCount;
+          totalOfficialTripsElem.textContent = officialCount;
+          lastUpdatedElem.textContent = now.toLocaleString();
 
-                try {
-                    const response = await fetch(appsScriptUrl);
-                    // Check if the response is OK (status 200)
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                    }
-                    const data = await response.json();
+        } catch (err) {
+          console.error(err);
+          monthlyFuelElem.textContent = 'Error';
+          totalPrivateTripsElem.textContent = 'Error';
+          totalOfficialTripsElem.textContent = 'Error';
+          lastUpdatedElem.textContent = 'Failed to load';
+        }
+      }
 
-                    let monthlyFuel = 0;
-                    let totalPrivate = 0;
-                    let totalOfficial = 0;
+      tripStatusRadios.forEach(r => r.addEventListener('change', updateFuelVisibility));
+      tripForm.addEventListener('submit', () => {
+        submissionTimestampInput.value = new Date().toISOString();
+        setTimeout(fetchAndDisplayReport, 1000);
+      });
 
-                    const currentMonth = new Date().getMonth();
-                    const currentYear = new Date().getFullYear();
-
-                    data.forEach(row => {
-                        // Check for 'Trip Type' (case-insensitive and trim whitespace)
-                        const tripType = String(row['Trip Type']).toLowerCase().trim();
-                        if (tripType === 'private') {
-                            totalPrivate++;
-                        } else if (tripType === 'official') {
-                            totalOfficial++;
-                        }
-
-                        // Calculate monthly fuel
-                        // Ensure 'Timestamp' column exists and is a valid date string
-                        if (row['Timestamp']) {
-                            const timestamp = new Date(row['Timestamp']);
-                            // Check if timestamp is valid before proceeding
-                            if (!isNaN(timestamp.getTime())) {
-                                if (timestamp.getMonth() === currentMonth && timestamp.getFullYear() === currentYear) {
-                                    const fuel = parseFloat(row['Fuel Quantity (Liters)']);
-                                    if (!isNaN(fuel)) {
-                                        monthlyFuel += fuel;
-                                    }
-                                }
-                            } else {
-                                console.warn('Invalid timestamp encountered:', row['Timestamp']);
-                            }
-                        } else {
-                            console.warn('Timestamp column missing for a row:', row);
-                        }
-                    });
-
-                    monthlyFuelElem.textContent = monthlyFuel.toFixed(2);
-                    totalPrivateTripsElem.textContent = totalPrivate;
-                    totalOfficialTripsElem.textContent = totalOfficial;
-                    lastUpdatedElem.textContent = new Date().toLocaleString(); // Show last updated time
-
-                } catch (error) {
-                    console.error('Error fetching or processing report data:', error);
-                    // Optionally, display an error message on the page
-                    monthlyFuelElem.textContent = 'Error';
-                    totalPrivateTripsElem.textContent = 'Error';
-                    totalOfficialTripsElem.textContent = 'Error';
-                    lastUpdatedElem.textContent = 'Failed to load';
-                }
-            }
-
-            // Add event listeners to trip status radios
-            tripStatusRadios.forEach(radio => {
-                radio.addEventListener('change', updateFuelVisibility);
-            });
-
-            // Add event listener to the form for submission
-            tripForm.addEventListener('submit', function() {
-                // Populate the hidden timestamp field just before submission
-                submissionTimestampInput.value = new Date().toISOString();
-                // After submission, refresh the report (optional, but good for immediate feedback)
-                setTimeout(fetchAndDisplayReport, 1000); // Give a small delay for sheet update
-            });
-
-            // Initial calls on page load
-            updateFuelVisibility();
-            fetchAndDisplayReport(); // Load report data when the page loads
-        });
-    </script>
+      updateFuelVisibility();
+      fetchAndDisplayReport();
+    });
+  </script>
 </body>
 </html>
